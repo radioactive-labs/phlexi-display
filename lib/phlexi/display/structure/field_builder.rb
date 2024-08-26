@@ -45,80 +45,80 @@ module Phlexi
         #
         # @param attributes [Hash] Additional attributes for the label.
         # @return [Components::Label] The label component.
-        def label_tag(**attributes, &)
-          create_component(Components::Label, :label, **attributes, &)
+        def label_tag(**, &)
+          create_component(Components::Label, :label, **, &)
         end
 
         # Creates a Placeholder tag for the field.
         #
         # @param attributes [Hash] Additional attributes for the placeholder.
         # @return [Components::Placeholder] The placeholder component.
-        def placeholder_tag(**attributes, &)
-          create_component(Components::Placeholder, :placeholder, **attributes, &)
+        def placeholder_tag(**, &)
+          create_component(Components::Placeholder, :placeholder, **, &)
         end
 
         # Creates a Description tag for the field.
         #
         # @param attributes [Hash] Additional attributes for the description.
         # @return [Components::Description] The description component.
-        def description_tag(**attributes, &)
-          create_component(Components::Description, :description, **attributes, &)
+        def description_tag(**, &)
+          create_component(Components::Description, :description, **, &)
         end
 
         # Creates a string display tag for the field.
         #
         # @param attributes [Hash] Additional attributes for the string display.
         # @return [Components::String] The string component.
-        def string_tag(**attributes, &)
-          create_component(Components::String, :string, **attributes, &)
+        def string_tag(**, &)
+          create_component(Components::String, :string, **, &)
         end
 
         # # Creates a text display tag for the field.
         # #
         # # @param attributes [Hash] Additional attributes for the text display.
         # # @return [Components::Text] The text component.
-        # def text_tag(**attributes, &)
-        #   create_component(Components::Text, :text, **attributes, &)
+        # def text_tag(**, &)
+        #   create_component(Components::Text, :text, **, &)
         # end
 
         # Creates a number display tag for the field.
         #
         # @param attributes [Hash] Additional attributes for the number display.
         # @return [Components::Number] The number component.
-        def number_tag(**attributes, &)
-          create_component(Components::Number, :number, **attributes, &)
+        def number_tag(**, &)
+          create_component(Components::Number, :number, **, &)
         end
 
         # Creates a datetime display for the field.
         #
         # @param attributes [Hash] Additional attributes for the datetime display.
         # @return [Components::DateTime] The datetime component.
-        def datetime_tag(**attributes, &)
-          create_component(Components::DateTime, :datetime, **attributes, &)
+        def datetime_tag(**, &)
+          create_component(Components::DateTime, :datetime, **, &)
         end
 
         # # Creates a boolean display tag for the field.
         # #
         # # @param attributes [Hash] Additional attributes for the boolean display.
         # # @return [Components::Boolean] The boolean component.
-        # def boolean_tag(**attributes, &)
-        #   create_component(Components::Boolean, :boolean, **attributes, &)
+        # def boolean_tag(**, &)
+        #   create_component(Components::Boolean, :boolean, **, &)
         # end
 
         # # Creates an association display tag for the field.
         # #
         # # @param attributes [Hash] Additional attributes for the association display.
         # # @return [Components::Association] The association component.
-        # def association_tag(**attributes, &)
-        #   create_component(Components::Association, :association, **attributes, &)
+        # def association_tag(**, &)
+        #   create_component(Components::Association, :association, **, &)
         # end
 
         # # Creates an attachment display tag for the field.
         # #
         # # @param attributes [Hash] Additional attributes for the attachment display.
         # # @return [Components::Attachment] The attachment component.
-        # def attachment_tag(**attributes, &)
-        #   create_component(Components::Attachment, :attachment, **attributes, &)
+        # def attachment_tag(**, &)
+        #   create_component(Components::Attachment, :attachment, **, &)
         # end
 
         # Wraps the field with additional markup.
@@ -126,8 +126,8 @@ module Phlexi
         # @param attributes [Hash] Additional attributes for the wrapper.
         # @yield [block] The block to be executed within the wrapper.
         # @return [Components::Wrapper] The wrapper component.
-        def wrapped(**attributes, &)
-          create_component(Components::Wrapper, :wrapper, **attributes, &)
+        def wrapped(**, &)
+          create_component(Components::Wrapper, :wrapper, **, &)
         end
 
         # Creates a repeated field collection.
@@ -142,11 +142,9 @@ module Phlexi
         protected
 
         def create_component(component_class, theme_key, **attributes, &)
-          component_class.new(self, class: component_class_for(theme_key, attributes), **attributes, &)
-        end
-
-        def component_class_for(theme_key, attributes)
-          attributes.delete(:class) || themed(attributes.key?(:theme) ? attributes.delete(:theme) : theme_key)
+          theme_key = attributes.delete(:theme) || theme_key
+          attributes = mix({class: themed(theme_key)}, attributes) unless attributes.key?(:class!)
+          component_class.new(self, **attributes, &)
         end
 
         def determine_value(value)

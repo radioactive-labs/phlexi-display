@@ -50,10 +50,6 @@ module Phlexi
         display_template
       end
 
-      protected
-
-      attr_reader :options, :attributes, :namespace_klass, :builder_klass
-
       # Executes the display's content block.
       # Override this in subclasses to define a static display.
       #
@@ -61,6 +57,10 @@ module Phlexi
       def display_template
         instance_exec(&@_content_block) if @_content_block
       end
+
+      protected
+
+      attr_reader :options, :attributes, :namespace_klass, :builder_klass
 
       # Initializes the object and key based on the given record.
       #
@@ -99,11 +99,10 @@ module Phlexi
       #
       # @return [Hash] The display attributes
       def display_attributes
-        {
+        mix({
           id: @namespace.dom_id,
-          class: display_class,
-          **attributes
-        }
+          class: display_class
+        }, attributes)
       end
 
       private
