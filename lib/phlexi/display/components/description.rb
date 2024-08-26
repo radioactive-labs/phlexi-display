@@ -3,17 +3,17 @@
 module Phlexi
   module Display
     module Components
-      class FullError < Base
+      class Description < Base
         def view_template
-          p(**attributes) do
-            field.full_error
-          end
+          p(**attributes) {
+            field.description
+          }
         end
 
         private
 
         def render?
-          field.show_errors? && field.has_errors?
+          field.has_description?
         end
       end
     end

@@ -25,12 +25,7 @@ module Phlexi
 
           attributes[:class] = tokens(
             component_name,
-            attributes[:class],
-            -> { attributes[:required] } => "required",
-            -> { !attributes[:required] } => "optional",
-            -> { field.has_errors? } => "invalid",
-            -> { attributes[:readonly] } => "readonly",
-            -> { attributes[:disabled] } => "disabled"
+            attributes[:class]
           )
         end
 
@@ -41,11 +36,3 @@ module Phlexi
     end
   end
 end
-
-
-
-User
- name: :string
- validate :name, presence: true
-
-f.input :name

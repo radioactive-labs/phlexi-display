@@ -3,10 +3,10 @@
 module Phlexi
   module Display
     module FieldOptions
-      module Placeholder
+      module Placeholders
         def placeholder(placeholder = nil)
           if placeholder.nil?
-            options[:placeholder]
+            options[:placeholder] || "-"
           else
             options[:placeholder] = placeholder
             self

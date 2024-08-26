@@ -14,26 +14,16 @@ module Phlexi
       # @attr_accessor [Object] value The value of the field.
       class FieldBuilder < Node
         include Phlex::Helpers
-        include FieldOptions::Associations
         include FieldOptions::Themes
-        include FieldOptions::Validators
-        include FieldOptions::Labels
-        include FieldOptions::Hints
-        include FieldOptions::Errors
+        include FieldOptions::Associations
+        include FieldOptions::Attachments
         include FieldOptions::InferredTypes
-        include FieldOptions::Collection
-        include FieldOptions::Placeholder
-        include FieldOptions::Required
-        include FieldOptions::Autofocus
-        include FieldOptions::Disabled
-        include FieldOptions::Readonly
-        include FieldOptions::Length
-        include FieldOptions::MinMax
-        include FieldOptions::Pattern
-        include FieldOptions::Multiple
-        include FieldOptions::Limit
+        include FieldOptions::Labels
+        include FieldOptions::Placeholders
+        include FieldOptions::Description
+        # include FieldOptions::Hints
 
-        attr_reader :dom, :options, :object, :input_attributes, :value
+        attr_reader :dom, :options, :object, :value
 
         # Initializes a new FieldBuilder instance.
         #
@@ -41,14 +31,12 @@ module Phlexi
         # @param parent [Structure::Namespace] The parent object.
         # @param object [Object, nil] The associated object.
         # @param value [Object] The initial value for the field.
-        # @param input_attributes [Hash] Default attributes to apply to input fields.
         # @param options [Hash] Additional options for the field.
-        def initialize(key, parent:, object: nil, value: NIL_VALUE, input_attributes: {}, **options)
+        def initialize(key, parent:, object: nil, value: NIL_VALUE, **options)
           super(key, parent: parent)
 
           @object = object
-          @value = determine_initial_value(value)
-          @input_attributes = input_attributes
+          @value = determine_value(value)
           @options = options
           @dom = Structure::DOM.new(field: self)
         end
@@ -61,174 +49,110 @@ module Phlexi
           create_component(Components::Label, :label, **attributes, &)
         end
 
-        # Creates an input tag for the field.
+        # Creates a Placeholder tag for the field.
         #
-        # @param attributes [Hash] Additional attributes for the input.
-        # @return [Components::Input] The input component.
-        def input_tag(**attributes, &)
-          create_component(Components::Input, :input, **attributes, &)
+        # @param attributes [Hash] Additional attributes for the placeholder.
+        # @return [Components::Placeholder] The placeholder component.
+        def placeholder_tag(**attributes, &)
+          create_component(Components::Placeholder, :placeholder, **attributes, &)
         end
 
-        def file_input_tag(**attributes, &)
-          create_component(Components::FileInput, :file, **attributes, &)
-        end
-
-        # Creates a checkbox tag for the field.
+        # Creates a Description tag for the field.
         #
-        # @param attributes [Hash] Additional attributes for the checkbox.
-        # @return [Components::Checkbox] The checkbox component.
-        def checkbox_tag(**attributes, &)
-          create_component(Components::Checkbox, :checkbox, **attributes, &)
+        # @param attributes [Hash] Additional attributes for the description.
+        # @return [Components::Description] The description component.
+        def description_tag(**attributes, &)
+          create_component(Components::Description, :description, **attributes, &)
         end
 
-        # Creates collection checkboxes for the field.
+        # Creates a string display tag for the field.
         #
-        # @param attributes [Hash] Additional attributes for the collection checkboxes.
-        # @yield [block] The block to be executed for each checkbox.
-        # @return [Components::CollectionCheckboxes] The collection checkboxes component.
-        def collection_checkboxes_tag(**attributes, &)
-          create_component(Components::CollectionCheckboxes, :collection_checkboxes, **attributes, &)
+        # @param attributes [Hash] Additional attributes for the string display.
+        # @return [Components::String] The string component.
+        def string_tag(**attributes, &)
+          create_component(Components::String, :string, **attributes, &)
         end
 
-        # Creates a radio button tag for the field.
+        # # Creates a text display tag for the field.
+        # #
+        # # @param attributes [Hash] Additional attributes for the text display.
+        # # @return [Components::Text] The text component.
+        # def text_tag(**attributes, &)
+        #   create_component(Components::Text, :text, **attributes, &)
+        # end
+
+        # Creates a number display tag for the field.
         #
-        # @param attributes [Hash] Additional attributes for the radio button.
-        # @return [Components::RadioButton] The radio button component.
-        def radio_button_tag(**attributes, &)
-          create_component(Components::RadioButton, :radio, **attributes, &)
+        # @param attributes [Hash] Additional attributes for the number display.
+        # @return [Components::Number] The number component.
+        def number_tag(**attributes, &)
+          create_component(Components::Number, :number, **attributes, &)
         end
 
-        # Creates collection radio buttons for the field.
+        # Creates a datetime display for the field.
         #
-        # @param attributes [Hash] Additional attributes for the collection radio buttons.
-        # @yield [block] The block to be executed for each radio button.
-        # @return [Components::CollectionRadioButtons] The collection radio buttons component.
-        def collection_radio_buttons_tag(**attributes, &)
-          create_component(Components::CollectionRadioButtons, :collection_radio_buttons, **attributes, &)
+        # @param attributes [Hash] Additional attributes for the datetime display.
+        # @return [Components::DateTime] The datetime component.
+        def datetime_tag(**attributes, &)
+          create_component(Components::DateTime, :datetime, **attributes, &)
         end
 
-        # Creates a textarea tag for the field.
-        #
-        # @param attributes [Hash] Additional attributes for the textarea.
-        # @return [Components::Textarea] The textarea component.
-        def textarea_tag(**attributes, &)
-          create_component(Components::Textarea, :textarea, **attributes, &)
-        end
+        # # Creates a boolean display tag for the field.
+        # #
+        # # @param attributes [Hash] Additional attributes for the boolean display.
+        # # @return [Components::Boolean] The boolean component.
+        # def boolean_tag(**attributes, &)
+        #   create_component(Components::Boolean, :boolean, **attributes, &)
+        # end
 
-        # Creates a select tag for the field.
-        #
-        # @param attributes [Hash] Additional attributes for the select.
-        # @return [Components::Select] The select component.
-        def select_tag(**attributes, &)
-          create_component(Phlex::UI::Select, :select, **attributes, &)
-        end
+        # # Creates an association display tag for the field.
+        # #
+        # # @param attributes [Hash] Additional attributes for the association display.
+        # # @return [Components::Association] The association component.
+        # def association_tag(**attributes, &)
+        #   create_component(Components::Association, :association, **attributes, &)
+        # end
 
-        def input_array_tag(**attributes, &)
-          create_component(Components::InputArray, :array, **attributes, &)
-        end
-
-        # Creates a hint tag for the field.
-        #
-        # @param attributes [Hash] Additional attributes for the hint.
-        # @return [Components::Hint] The hint component.
-        def hint_tag(**attributes, &)
-          create_component(Components::Hint, :hint, **attributes, &)
-        end
-
-        # Creates an error tag for the field.
-        #
-        # @param attributes [Hash] Additional attributes for the error.
-        # @return [Components::Error] The error component.
-        def error_tag(**attributes, &)
-          create_component(Components::Error, :error, **attributes, &)
-        end
-
-        # Creates a full error tag for the field.
-        #
-        # @param attributes [Hash] Additional attributes for the full error.
-        # @return [Components::FullError] The full error component.
-        def full_error_tag(**attributes, &)
-          create_component(Components::FullError, :full_error, **attributes, &)
-        end
+        # # Creates an attachment display tag for the field.
+        # #
+        # # @param attributes [Hash] Additional attributes for the attachment display.
+        # # @return [Components::Attachment] The attachment component.
+        # def attachment_tag(**attributes, &)
+        #   create_component(Components::Attachment, :attachment, **attributes, &)
+        # end
 
         # Wraps the field with additional markup.
         #
-        # @param inner [Hash] Attributes for the inner wrapper.
         # @param attributes [Hash] Additional attributes for the wrapper.
         # @yield [block] The block to be executed within the wrapper.
         # @return [Components::Wrapper] The wrapper component.
-        def wrapped(inner: {}, **attributes, &)
-          wrapper_class = attributes.delete(:class) || themed(attributes.delete(:theme) || :wrapper)
-          inner[:class] = inner.delete(:class) || themed(inner.delete(:theme) || :inner_wrapper)
-          Components::Wrapper.new(self, class: wrapper_class, inner: inner, **attributes, &)
+        def wrapped(**attributes, &)
+          create_component(Components::Wrapper, :wrapper, **attributes, &)
         end
 
-        # Creates a multi-value field collection.
+        # Creates a repeated field collection.
         #
-        # @param range [Integer, #to_a] The range of keys for each field. If an integer is passed, keys will begin from 1.
+        # @param range [#each] The collection of items to generate displays for.
         # @yield [block] The block to be executed for each item in the collection.
         # @return [FieldCollection] The field collection.
-        def multi(range = nil, &)
-          FieldCollection.new(field: self, range: range, &)
-        end
-
-        # Creates a submit button
-        #
-        # @param attributes [Hash] Additional attributes for the submit.
-        # @return [Components::SubmitButton] The submit button component.
-        def submit_button_tag(**attributes, &)
-          create_component(Components::SubmitButton, :submit_button, **attributes, &)
-        end
-
-        def extract_input(params)
-          raise "field##{dom.name} did not define an input component" unless @field_input_component
-
-          @field_input_component.extract_input(params)
+        def repeated(collection = [], &)
+          FieldCollection.new(field: self, collection:, &)
         end
 
         protected
 
         def create_component(component_class, theme_key, **attributes, &)
-          if component_class.include?(Phlexi::Display::Components::Concerns::HandlesInput)
-            raise "input component already defined: #{@field_input_component.inspect}" if @field_input_component
-
-            attributes = input_attributes.deep_merge(attributes)
-            @field_input_component = component_class.new(self, class: component_class_for(theme_key, attributes), **attributes, &)
-          else
-            component_class.new(self, class: component_class_for(theme_key, attributes), **attributes, &)
-          end
+          component_class.new(self, class: component_class_for(theme_key, attributes), **attributes, &)
         end
 
         def component_class_for(theme_key, attributes)
           attributes.delete(:class) || themed(attributes.key?(:theme) ? attributes.delete(:theme) : theme_key)
         end
 
-        def has_value?
-          value.present?
-        end
-
-        def determine_initial_value(value)
+        def determine_value(value)
           return value unless value == NIL_VALUE
 
-          determine_from_association || determine_value_from_object
-        end
-
-        def determine_value_from_object
           object.respond_to?(key) ? object.public_send(key) : nil
-        end
-
-        def determine_from_association
-          return nil unless reflection.present?
-
-          value = object.public_send(key)
-          case reflection.macro
-          when :has_many, :has_and_belongs_to_many
-            value&.map { |v| v.public_send(reflection.klass.primary_key) }
-          when :belongs_to, :has_one
-            value&.public_send(reflection.klass.primary_key)
-          else
-            raise ArgumentError, "Unsupported association type: #{reflection.macro}"
-          end
         end
       end
     end

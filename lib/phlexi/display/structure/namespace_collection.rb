@@ -16,14 +16,6 @@ module Phlexi
           each(&block)
         end
 
-        def extract_input(params)
-          namespace = build_namespace(0)
-          @block.call(namespace)
-
-          inputs = params[key].map { |param| namespace.extract_input([param]) }
-          {key => inputs}
-        end
-
         private
 
         def each(&)
@@ -32,7 +24,7 @@ module Phlexi
 
         # Builds and memoizes namespaces for the collection.
         #
-        # @return [Array<Hash>] An array of namespace hashes.
+        # @return [Array<Namespace>] An array of namespace objects.
         def namespaces
           @namespaces ||= @collection.map.with_index do |object, key|
             build_namespace(key, object: object)

@@ -3,10 +3,10 @@
 module Phlexi
   module Display
     module Components
-      class Label < Base
+      class Placeholder < Base
         def view_template
-          h5(**attributes) {
-            field.label
+          p(**attributes) {
+            field.placeholder
           }
         end
       end

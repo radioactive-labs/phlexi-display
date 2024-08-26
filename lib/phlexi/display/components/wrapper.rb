@@ -4,26 +4,12 @@ module Phlexi
   module Display
     module Components
       class Wrapper < Base
-        attr_reader :inner_attributes
-
         def view_template
-          div(**attributes) do
+          div(**attributes) {
             render field.label_tag
-            div(**inner_attributes) do
-              yield field if block_given?
-              render field.full_error_tag
-              render field.hint_tag
-            end
-          end
-        end
-
-        protected
-
-        def build_attributes
-          super
-
-          @inner_attributes = attributes.delete(:inner) || {}
-          inner_attributes[:class] = tokens("inner-wrapper", inner_attributes[:class])
+            yield field if block_given?
+            render field.description_tag
+          }
         end
       end
     end

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    phlexi-display (0.0.1)
+    phlexi-display (0.0.2)
       activesupport
       phlex (~> 1.11)
       zeitwerk

@@ -10,47 +10,32 @@ module Phlexi
           @inferred_db_type ||= infer_db_type
         end
 
-        def inferred_input_component
-          @inferred_input_component ||= infer_input_component
-        end
-
-        def inferred_input_type
-          @inferred_input_type ||= infer_input_type(inferred_input_component)
+        def inferred_display_component
+          @inferred_display_component ||= infer_display_component
         end
 
         private
 
-        # this returns the element type
-        # one of :input, :textarea, :select, :botton
-        def infer_input_component
-          return :select unless collection.blank?
-
+        def infer_display_component
           case inferred_db_type
-          when :text, :json, :jsonb, :hstore
-            :textarea
-          else
-            :input
-          end
-        end
-
-        # this only applies when input_component is `:input`
-        # resolves the type attribute of input components
-        def infer_input_type(component)
-          case inferred_db_type
-          when :string
-            infer_string_input_type(key)
+          when :string, :text
+            infer_string_display_type(key)
           when :integer, :float, :decimal
             :number
-          when :date
+          when :date, :datetime, :time
             :date
-          when :datetime
-            :datetime
-          when :time
-            :time
           when :boolean
-            :checkbox
+            :boolean
+          when :json, :jsonb, :hstore
+            :code
           else
-            :text
+            if association_reflection
+              :association
+            elsif attachment_reflection
+              :attachment
+            else
+              :text
+            end
           end
         end
 
@@ -81,40 +66,39 @@ module Phlexi
           case value
           when Integer
             :integer
-          when Float, BigDecimal
+          when Float
             :float
+          when BigDecimal
+            :decimal
           when TrueClass, FalseClass
             :boolean
           when Date
             :date
           when Time, DateTime
             :datetime
+          when Hash
+            :json
           else
             :string
           end
         end
 
-        def infer_string_input_type(key)
+        def infer_string_display_type(key)
           key = key.to_s.downcase
 
           return :password if is_password_field?
 
-          custom_type = custom_string_input_type(key)
+          custom_type = custom_string_display_type(key)
           return custom_type if custom_type
 
-          if has_validators?
-            infer_string_input_type_from_validations
-          else
-            :text
-          end
+          :text
         end
 
-        def custom_string_input_type(key)
+        def custom_string_display_type(key)
           custom_mappings = {
             /url$|^link|^site/ => :url,
             /^email/ => :email,
-            /^search/ => :search,
-            /phone|tel(ephone)?/ => :tel,
+            /phone|tel(ephone)?/ => :phone,
             /^time/ => :time,
             /^date/ => :date,
             /^number|_count$|_amount$/ => :number,
@@ -126,16 +110,6 @@ module Phlexi
           end
 
           nil
-        end
-
-        def infer_string_input_type_from_validations
-          if attribute_validators.find { |v| v.kind == :numericality }
-            :number
-          elsif attribute_validators.find { |v| v.kind == :format && v.options[:with] == URI::MailTo::EMAIL_REGEXP }
-            :email
-          else
-            :text
-          end
         end
 
         def is_password_field?

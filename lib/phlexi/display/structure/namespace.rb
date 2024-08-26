@@ -3,13 +3,18 @@
 module Phlexi
   module Display
     module Structure
-      # A Namespace maps and object to values, but doesn't actually have a value itself. For
+      # A Namespace maps an object to values, but doesn't actually have a value itself. For
       # example, a `User` object or ActiveRecord model could be passed into the `:user` namespace.
-      # To access the values on a Namespace, the `field` can be called for single values.
       #
-      # Additionally, to access namespaces within a namespace, such as if a `User has_many :addresses` in
-      # ActiveRecord, the `namespace` method can be called which will return another Namespace object and
-      # set the current Namespace as the parent.
+      # To access single values on a Namespace, #field can be used.
+      #
+      # To access nested objects within a namespace, two methods are available:
+      #
+      # 1. #nest_one: Used for single nested objects, such as if a `User belongs_to :profile` in
+      #    ActiveRecord. This method returns another Namespace object.
+      #
+      # 2. #nest_many: Used for collections of nested objects, such as if a `User has_many :addresses` in
+      #    ActiveRecord. This method returns a NamespaceCollection object.
       class Namespace < Structure::Node
         include Enumerable
 
@@ -29,21 +34,17 @@ module Phlexi
           end
         end
 
-        def submit_button(key = nil, **attributes, &)
-          field(key || SecureRandom.hex).submit_button_tag(**attributes, &)
-        end
-
         # Creates a `Namespace` child instance with the parent set to the current instance, adds to
         # the `@children` Hash to ensure duplicate child namespaces aren't created, then calls the
         # method on the `@object` to get the child object to pass into that namespace.
         #
         # For example, if a `User#permission` returns a `Permission` object, we could map that to a
-        # form like this:
+        # display like this:
         #
         # ```ruby
-        # Superform :user, object: User.new do |form|
-        #   form.nest_one :permission do |permission|
-        #     form.field :role
+        # Phlexi::Display(user) do |display|
+        #   display.nest_one :profile do |profile|
+        #     render profile.field(:gender).text
         #   end
         # end
         # ```
@@ -56,13 +57,13 @@ module Phlexi
         # an enumerable or array of `Address` classes:
         #
         # ```ruby
-        # Phlexi::Display.new User.new do |form|
-        #   render form.field(:email).input_tag
-        #   render form.field(:name).input_tag
-        #   form.nest_many :addresses do |address|
-        #     render address.field(:street).input_tag
-        #     render address.field(:state).input_tag
-        #     render address.field(:zip).input_tag
+        # Phlexi::Display(user) do |display|
+        #   render display.field(:email).text
+        #   render display.field(:name).text
+        #   display.nest_many :addresses do |address|
+        #     render address.field(:street).text
+        #     render address.field(:state).text
+        #     render address.field(:zip).text
         #   end
         # end
         # ```
@@ -71,19 +72,6 @@ module Phlexi
         def nest_many(key, collection: nil, &)
           collection ||= Array(object_value_for(key: key))
           create_child(key, NamespaceCollection, collection:, &)
-        end
-
-        def extract_input(params)
-          if params.is_a?(Array)
-            each_with_object({}) do |child, hash|
-              hash.merge! child.extract_input(params[0])
-            end
-          else
-            input = each_with_object({}) do |child, hash|
-              hash.merge! child.extract_input(params[key])
-            end
-            {key => input}
-          end
         end
 
         # Iterates through the children of the current namespace, which could be `Namespace` or `Field`
@@ -105,7 +93,7 @@ module Phlexi
           end
         end
 
-        # Creates a root Namespace, which is essentially a form.
+        # Creates a root Namespace
         def self.root(*, builder_klass:, **, &)
           new(*, parent: nil, builder_klass:, **, &)
         end

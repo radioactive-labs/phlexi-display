@@ -14,7 +14,6 @@ module Phlexi
         "dom" => "DOM"
       )
       loader.push_dir(File.expand_path("..", __dir__))
-      loader.ignore(File.expand_path("../generators", __dir__))
       loader.setup
     end
 
