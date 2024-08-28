@@ -75,10 +75,12 @@ module Phlexi
           @key = record
         else
           @object = record
-          @key = if @key.nil? && object.respond_to?(:model_name) && object.model_name.respond_to?(:param_key) && object.model_name.param_key.present?
-            object.model_name.param_key
-          else
-            :object
+          if @key.nil?
+            @key = if object.respond_to?(:model_name) && object.model_name.respond_to?(:param_key) && object.model_name.param_key.present?
+              object.model_name.param_key
+            else
+              object.class.name.demodulize.underscore
+            end
           end
         end
         @key = @key.to_sym
