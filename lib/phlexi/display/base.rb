@@ -16,9 +16,9 @@ module Phlexi
     # @attr_reader [Symbol] key The display's key, derived from the record or explicitly set
     # @attr_reader [ActiveModel::Model, nil] object The display's associated object
     class Base < COMPONENT_BASE
-      class Namespace < Structure::Namespace; end
+      class Namespace < Phlexi::Field::Structure::Namespace; end
 
-      class FieldBuilder < Structure::FieldBuilder; end
+      class Builder < Builder; end
 
       attr_reader :key, :object
 
@@ -35,8 +35,8 @@ module Phlexi
       def initialize(record, attributes: {}, **options)
         @display_class = options.delete(:class)
         @attributes = attributes
-        @namespace_klass = options.delete(:namespace_klass) || default_namespace_klass
-        @builder_klass = options.delete(:builder_klass) || default_builder_klass
+        @namespace_klass = options.delete(:namespace_klass) || self.class::Namespace
+        @builder_klass = options.delete(:builder_klass) || self.class::Builder
         @options = options
 
         initialize_object_and_key(record)
@@ -105,16 +105,6 @@ module Phlexi
           id: @namespace.dom_id,
           class: display_class
         }, attributes)
-      end
-
-      private
-
-      def default_namespace_klass
-        self.class::Namespace
-      end
-
-      def default_builder_klass
-        self.class::FieldBuilder
       end
     end
   end

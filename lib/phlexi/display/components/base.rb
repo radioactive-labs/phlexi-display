@@ -3,35 +3,7 @@
 module Phlexi
   module Display
     module Components
-      class Base < COMPONENT_BASE
-        attr_reader :field, :attributes
-
-        def initialize(field, **attributes)
-          @field = field
-          @attributes = attributes
-
-          build_attributes
-          append_attribute_classes
-        end
-
-        protected
-
-        def build_attributes
-          attributes.fetch(:id) { attributes[:id] = "#{field.dom.id}_#{component_name}" }
-        end
-
-        def append_attribute_classes
-          return if attributes[:class] == false
-
-          attributes[:class] = tokens(
-            component_name,
-            attributes[:class]
-          )
-        end
-
-        def component_name
-          @component_name ||= self.class.name.demodulize.underscore
-        end
+      class Base < Phlexi::Field::Components::Base
       end
     end
   end
