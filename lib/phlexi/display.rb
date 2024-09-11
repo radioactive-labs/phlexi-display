@@ -27,5 +27,5 @@ module Phlexi
 end
 
 def Phlexi.Display(...)
-  Phlexi::Display::Base.new(...)
+  Phlexi::Display::Base.inline(...)
 end

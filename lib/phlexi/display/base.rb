@@ -20,6 +20,14 @@ module Phlexi
 
       class Builder < Builder; end
 
+      def self.inline(*, **, &block)
+        raise ArgumentError, "block is required" unless block
+
+        new(*, **) do |f|
+          f.instance_exec(&block)
+        end
+      end
+
       attr_reader :key, :object
 
       delegate :field, :nest_one, :nest_many, to: :@namespace
@@ -46,8 +54,8 @@ module Phlexi
       # Renders the display template.
       #
       # @return [void]
-      def view_template
-        display_template
+      def view_template(&)
+        display_template(&)
       end
 
       # Executes the display's content block.
@@ -55,7 +63,7 @@ module Phlexi
       #
       # @return [void]
       def display_template
-        instance_exec(&@_content_block) if @_content_block
+        yield if block_given?
       end
 
       protected
