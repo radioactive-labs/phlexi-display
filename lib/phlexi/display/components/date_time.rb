@@ -11,8 +11,7 @@ module Phlexi
         # @param value [String, Date, Time, DateTime] The value to be rendered
         # @return [void]
         def render_value(value)
-          formatted_value = format_date_time(value)
-          p(**attributes) { formatted_value }
+          p(**attributes) { value }
         end
 
         protected
@@ -20,27 +19,28 @@ module Phlexi
         def build_attributes
           super
 
-          @options = {
-            format: default_format
-          }.merge(attributes.delete(:options) || {}).compact
+          @options = attributes.delete(:options) || {}
+          @formats = Array(@options.delete(:format)).compact + default_formats
         end
 
-        private
-
-        def format_date_time(value)
-          I18n.l(value, **@options)
+        def format_value(value)
+          @formats.each do |fmt|
+            return I18n.l(value, **@options, format: fmt)
+          rescue
+            nil
+          end
         end
 
-        def default_format
-          :long
+        def default_formats
+          [:long]
         end
 
         def normalize_value(value)
           case value
-          when Date, DateTime, Time, nil
-            value
+          when ::DateTime, ::Date, ::Time
+            format_value(value)
           else
-            raise ArgumentError, "Value must be a Date, DateTime or Time object. #{value.inspect} given."
+            value.to_s
           end
         end
       end

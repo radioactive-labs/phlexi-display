@@ -3,10 +3,12 @@
 module Phlexi
   module Display
     module Components
-      class Placeholder < Base
-        def view_template
+      class Enum < Base
+        include Concerns::DisplaysValue
+
+        def render_value(value)
           p(**attributes) {
-            field.placeholder || "-"
+            value
           }
         end
       end

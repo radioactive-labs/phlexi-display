@@ -12,15 +12,12 @@ module Phlexi
       loader.inflector.inflect(
         "phlexi-display" => "Phlexi",
         "phlexi" => "Phlexi",
-        "dom" => "DOM"
+        "html" => "HTML",
+        "json" => "JSON"
       )
       loader.push_dir(File.expand_path("..", __dir__))
       loader.setup
     end
-
-    COMPONENT_BASE = (defined?(::ApplicationComponent) ? ::ApplicationComponent : Phlex::HTML)
-
-    NIL_VALUE = :__i_phlexi_display_nil_value_i__
 
     class Error < StandardError; end
   end

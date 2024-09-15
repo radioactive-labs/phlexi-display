@@ -15,10 +15,10 @@ module Phlexi
     #
     # @attr_reader [Symbol] key The display's key, derived from the record or explicitly set
     # @attr_reader [ActiveModel::Model, nil] object The display's associated object
-    class Base < COMPONENT_BASE
+    class Base < Phlexi::Display::HTML
       class Namespace < Phlexi::Field::Structure::Namespace; end
 
-      class Builder < Builder; end
+      class Builder < Phlexi::Display::Builder; end
 
       def self.inline(*, **, &block)
         raise ArgumentError, "block is required" unless block
@@ -41,7 +41,6 @@ module Phlexi
       # @option options [Class] :namespace_klass Custom namespace class
       # @option options [Class] :builder_klass Custom field builder class
       def initialize(record, attributes: {}, **options)
-        @display_class = options.delete(:class)
         @attributes = attributes
         @namespace_klass = options.delete(:namespace_klass) || self.class::Namespace
         @builder_klass = options.delete(:builder_klass) || self.class::Builder
@@ -55,7 +54,7 @@ module Phlexi
       #
       # @return [void]
       def view_template(&)
-        display_template(&)
+        display_wrapper { display_template(&) }
       end
 
       # Executes the display's content block.
@@ -100,10 +99,13 @@ module Phlexi
       def initialize_namespace
         @namespace = namespace_klass.root(key, object: object, builder_klass: builder_klass)
       end
+
       # Retrieves the display's CSS classes.
       #
       # @return [String] The display's CSS classes
-      attr_reader :display_class
+      def display_class
+        themed(:base)
+      end
 
       # Generates the display attributes hash.
       #
@@ -113,6 +115,12 @@ module Phlexi
           id: @namespace.dom_id,
           class: display_class
         }, attributes)
+      end
+
+      def display_wrapper(&)
+        div(**display_attributes) do
+          yield
+        end
       end
     end
   end
