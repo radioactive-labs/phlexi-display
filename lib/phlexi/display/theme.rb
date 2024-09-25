@@ -7,6 +7,7 @@ module Phlexi
           label: nil,
           description: nil,
           placeholder: nil,
+          value_wrapper: nil,
           string: nil,
           text: :string,
           phone: :string,
