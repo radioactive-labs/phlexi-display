@@ -17,6 +17,8 @@ module Phlexi
           # when :attachment, :binary
           #   :attachment
           # end
+          when :citext
+            infer_string_field_type || :string
           when :integer, :association, :hstore, :date, :time, :datetime
             inferred_field_type
           else
