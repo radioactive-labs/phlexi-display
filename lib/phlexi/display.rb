@@ -9,6 +9,7 @@ module Phlexi
   module Display
     Loader = Zeitwerk::Loader.new.tap do |loader|
       loader.tag = File.basename(__FILE__, ".rb")
+      loader.ignore("#{__dir__}/display/version.rb")
       loader.inflector.inflect(
         "phlexi-display" => "Phlexi",
         "phlexi" => "Phlexi",
