@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    phlexi-display (0.0.7)
+    phlexi-display (0.0.8)
       activesupport
       phlex (~> 1.11)
       phlexi-field

@@ -19,8 +19,8 @@ module Phlexi
           icon_theme = themed(:prefixed_icon)
           svg(
             xmlns: "http://www.w3.org/2000/svg",
-            width: icon_theme || "24",
-            height: icon_theme || "24",
+            width: icon_theme ? nil : "24",
+            height: icon_theme ? nil : "24",
             class: icon_theme,
             viewbox: "0 0 24 24",
             fill: "none",
