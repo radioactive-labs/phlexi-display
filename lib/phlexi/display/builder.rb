@@ -45,10 +45,6 @@ module Phlexi
         create_component(Components::String, :text, **, &)
       end
 
-      def phone_tag(**, &)
-        create_component(Components::String, :phone, **, &)
-      end
-
       # Creates a number display tag for the field.
       #
       # @param attributes [Hash] Additional attributes for the number display.
@@ -123,6 +119,14 @@ module Phlexi
       # @return [Components::Email] The email component.
       def email_tag(**, &)
         create_component(Components::Email, :email, **, &)
+      end
+
+      # Creates a email display tag for the field.
+      #
+      # @param attributes [Hash] Additional attributes for the phone display.
+      # @return [Components::Email] The email component.
+      def phone_tag(**, &)
+        create_component(Components::Phone, :phone, **, &)
       end
 
       # Creates a url display tag for the field.
