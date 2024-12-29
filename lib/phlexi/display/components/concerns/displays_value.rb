@@ -31,12 +31,6 @@ module Phlexi
             )
           end
 
-          def render_values(values)
-            values.each do |value|
-              render_value(normalize_value(value))
-            end
-          end
-
           # Renders the field value for display.
           #
           # @return [String] the formatted field value for display.
