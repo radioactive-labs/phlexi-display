@@ -8,8 +8,21 @@ module Phlexi
 
         def render_value(value)
           p(**attributes) {
-            value
+            maybe_format_value value
           }
+        end
+
+        protected
+
+        def build_attributes
+          super
+          @formatter = attributes[:formatter]
+        end
+
+        def maybe_format_value(value)
+          return value unless @formatter
+
+          @formatter.call(value)
         end
       end
     end
