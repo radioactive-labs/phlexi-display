@@ -15,8 +15,8 @@ module Phlexi
         protected
 
         def build_attributes
+          @formatter = attributes.delete(:formatter)
           super
-          @formatter = attributes[:formatter]
         end
 
         def maybe_format_value(value)
