@@ -11,3 +11,5 @@
 .rspec_status
 test/internal/db/*.sqlite*
 ai_tools
+
+Gemfile.lock
