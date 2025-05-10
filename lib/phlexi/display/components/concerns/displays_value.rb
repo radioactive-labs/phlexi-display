@@ -26,7 +26,7 @@ module Phlexi
           def wrapped(&)
             div(
               id: attributes.delete(:id),
-              class: tokens(component_name, "value_wrapper", themed(:value_wrapper), themed(:"#{component_name}_value_wrapper")),
+              class: "#{component_name} value_wrapper #{themed(:value_wrapper)} #{themed(:"#{component_name}_value_wrapper")}",
               &
             )
           end
@@ -51,7 +51,7 @@ module Phlexi
             return if attributes[:class] == false
 
             super
-            attributes[:class] = tokens(component_name, "value", attributes[:class].sub(component_name, ""))
+            attributes[:class] = "#{component_name} value #{attributes[:class].sub(component_name, "")}"
           end
 
           def normalize_value(value)
