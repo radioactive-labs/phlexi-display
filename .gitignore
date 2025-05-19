@@ -13,3 +13,5 @@ test/internal/db/*.sqlite*
 ai_tools
 
 Gemfile.lock
+/vendor/bundle/
+/gemfiles/*.gemfile.lock

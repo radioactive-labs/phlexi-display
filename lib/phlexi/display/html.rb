@@ -10,6 +10,7 @@ module Phlexi
       end
 
       include Behaviour
+      include Phlexi::Field::Common::Tokens
     end
   end
 end
